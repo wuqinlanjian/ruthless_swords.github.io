@@ -1,11 +1,279 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" href="data:image/ico;base64,aWNv">
+  <script type="text/javascript">
+    (function (c, l, a, r, i, t, y) {
+      c[a] = c[a] || function () { (c[a].q = c[a].q || []).push(arguments) };
+      t = l.createElement(r); t.async = 1; t.src = "https://www.clarity.ms/tag/" + i;
+      y = l.getElementsByTagName(r)[0]; y.parentNode.insertBefore(t, y);
+    })(window, document, "clarity", "script", "p4f74su9m5");
+  </script>
+  <title>Minecraft基岩版联机平台</title>
+  <style>
+    .card-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      justify-content: center; /* Center the cards */
+    }
+
+    .card {
+      border: 1px solid black;
+      padding: 16px;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      width: calc(33% - 32px); /* Default to 3 columns */
+    }
+
+    @media (max-width: 768px) {
+      .card {
+        width: calc(100% - 32px); /* Single column on small devices */
+      }
+    }
+
+    @media (min-width: 769px) and (max-width: 1200px) {
+      .card {
+        width: calc(50% - 32px); /* Two columns on medium devices */
+      }
+    }
+
+    @media (min-width: 1201px) {
+      .card {
+        width: calc(25% - 32px); /* Four columns on large devices */
+      }
+    }
+
+    .card h2 {
+      font-size: 1.2em;
+      font-weight: bold;
+      margin: 0 0 8px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .card p {
+      margin: 4px 0;
+    }
+
+    .card .footer {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+    }
+
+    .card button {
+      margin-left: auto;
+    }
+
+    .disabled {
+      background-color: gray;
+      color: white;
+      pointer-events: none;
+    }
     
+    #explanation {
+      display: none; /* Initially hide the explanation */
+    }
+  </style>
+</head>
+
+<body>
+  <h3>MC基岩版联机房间列表  加好友维护中，已加成功的可继续正常使用，维护具体情况看QQ群</h3>
+  <button onclick="explanationtext()">点击显示/隐藏说明文字</button>
+  <div id="explanation">
+    <p>QQ群：261872591，有疑问加群就行。<br>
+    中国大陆镜像站：<a href="https://mcroom.nekotc.cn" target="_blank" rel="noopener noreferrer">https://mcroom.nekotc.cn</a><br>
+    中国香港镜像站：<a href="https://zeimg.top/mcr.html" target="_blank" rel="noopener noreferrer">https://zeimg.top/mcr.html</a><br>
+    请进入Minecraft搜索RiverBaker61061加好友，不要使用Xbox app发送好友请求，如使用app请点击关注而不是添加好友，我挂了自动回关程序。<br>
+    注意！！！现在过渡期RiverBaker61061暂时当房间获取源，晚点将改回原来的MultiMC23，所以要继续使用本平台的玩家请添加MultiMC23为好友。<br>
+    Join To Open Server List房间可以用来测试房间显示是否对自己账号有效。</p>
+  </div>
+  <button id="getRoomList">点击刷新房间信息</button>
+  <p>晚间高峰期加载较慢，请耐心等待。工作日房间较少，假日房间30+个。按钮按下去后请等待几秒。</p>
+  <div id="roomCards" class="card-container">
+    <!-- Room cards will be added here -->
+  </div>
+
+  <script>
+    function explanationtext() {
+      var text = document.getElementById("explanation");
+      text.style.display = text.style.display === "block" ? "none" : "block";
+    }
+
+    const loadaction = function () {
+      fetch("https://mc.ni-hao.vip/list", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          "type": "activity",
+          "scid": "4fc10100-5f7a-4470-899b-280835760c07",
+          "owners": {
+            "people": {
+              "moniker": "people",
+              "monikerXuid": "2535415652358179"
+            }
+          }
+        }),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          const container = document.getElementById("roomCards");
+          container.innerHTML = ""; // Clear existing cards
+
+          // Separate cards into joinable and unjoinable
+          const joinableCards = [];
+          const unjoinableCards = [];
+
+          data.results.forEach((result) => {
+            const card = document.createElement("div");
+            card.className = "card";
+
+            const joinability =
+              result.customProperties.BroadcastSetting === 3
+                ? `<button onclick="joinRoom('${result.id}', '${result.sessionRef.name}')">点击显示房间</button>`
+                : "此房间无法加入";
+
+            const worldType =
+              result.customProperties.worldType === "Creative"
+                ? "创造"
+                : result.customProperties.worldType === "Adventure"
+                  ? "冒险"
+                  : result.customProperties.worldType === "Survival"
+                    ? result.customProperties.isHardcore
+                      ? "极限"
+                      : "生存"
+                    : result.customProperties.worldType;
+
+            card.innerHTML = `
+              <h2>${result.customProperties.worldName}</h2>
+              <p>房主：${result.customProperties.hostName}</p>
+              <p>版本：${result.customProperties.version} 模式：${worldType}</p>
+              <p>人数：${result.customProperties.MemberCount}/${result.customProperties.MaxMemberCount}</p>
+              <div class="footer">${joinability}</div>
+            `;
+
+            if (result.customProperties.BroadcastSetting === 3) {
+              joinableCards.push(card);
+            } else {
+              unjoinableCards.push(card);
+            }
+          });
+
+          // Append joinable cards first, then unjoinable cards
+          joinableCards.forEach(card => container.appendChild(card));
+          unjoinableCards.forEach(card => container.appendChild(card));
+        });
+    }
+
+    document.getElementById("getRoomList").addEventListener("click", function () {
+      const button = this;
+      button.classList.add('disabled');
+      button.disabled = true;
+      setTimeout(() => {
+        button.classList.remove('disabled');
+        button.disabled = false;
+        loadaction();
+      }, 10000);
+    });
+    window.onload = loadaction;
+
+    function joinRoom(roomId, sessionName) {
+      const buttons = document.querySelectorAll('.card button');
+      buttons.forEach(button => {
+        button.classList.add('disabled');
+        button.disabled = true;
+      });
+
+      const ws = new WebSocket("wss://mc.ni-hao.vip/join");
+
+      ws.onopen = function () {
+        ws.send(
+          JSON.stringify([
+            1,
+            1,
+            "https://sessiondirectory.xboxlive.com/connections/",
+          ])
+        );
+        setTimeout(() => {
+          ws.close();
+        }, 8000);
+      };
+
+      ws.onmessage = function (event) {
+        const message = JSON.parse(event.data);
+        const connectionid = message[4].ConnectionId;
+        fetch(`https://mc.ni-hao.vip/join2?id=${roomId}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            "members": {
+              "me": {
+                "constants": {
+                  "system": {
+                    "xuid": "2535415652358179",
+                    "initialize": true
+                  }
+                },
+                "properties": {
+                  "system": {
+                    "active": true,
+                    "connection": connectionid,
+                    "subscription": {
+                      "id": "9d4ac4d1-6893-4fc5-aaac-29431614a72f",
+                      "changeTypes": ["everything"]
+                    }
+                  }
+                }
+              }
+            }
+          })
+        }).then(() => {
+          fetch('https://mc.ni-hao.vip/handles', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              "type": "activity",
+              "sessionRef": {
+                "scid": "4fc10100-5f7a-4470-899b-280835760c07",
+                "templateName": "MinecraftLobby",
+                "name": sessionName
+              },
+              "version": 1
+            })
+          })
+          .then((response) => {
+            if (response.ok) {
+              alert("广播房间成功，请进入游戏查看。本网站只提供网页服务，不运营游戏服务。");
+            } else {
+              alert("失败，可能是房间已关闭。请刷新房间信息后再找一个房间尝试。如果多次失败，可联系管理员。");
+            }
+          }).finally(() => {
+            setTimeout(() => {
+              buttons.forEach(button => {
+                button.classList.remove('disabled');
+                button.disabled = false;
+              });
+            }, 5000);
+          });
+        });
+      };
+    }
+  </script>
 </body>
+
 </html>
