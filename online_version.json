@@ -5,17 +5,11 @@
     "desc": "添加了更多房间信息",
     "link": "https://fs-im-kefu.7moor-fs1.com/ly/4d2c3f00-7d4c-11e5-af15-41bf63ae4ea0/1732883403891/Xbox_Online_1.8.zip"
   },
-  "1.71": {
+  "1.7": {
     "child_ver": 1,
     "fix_ver": 1,
     "desc": "新增调试功能，修复exit问题",
     "link": "https://fs-im-kefu.7moor-fs1.com/ly/4d2c3f00-7d4c-11e5-af15-41bf63ae4ea0/1732722975701/Xbox_Online_1.7.0_Fix_1.zip"
-  },
-  "1.7": {
-    "child_ver": 0,
-    "fix_ver": 0,
-    "desc": "新增调试功能",
-    "link": "https://fs-im-kefu.7moor-fs1.com/ly/4d2c3f00-7d4c-11e5-af15-41bf63ae4ea0/1732722575309/Xbox_Online_1.7.0.zip"
   },
   "1.6": {
     "child_ver": 0,
