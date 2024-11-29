@@ -1,9 +1,9 @@
 {
   "1.8": {
-    "child_ver": 0,
+    "child_ver": 5,
     "fix_ver": 0,
-    "desc": "添加了更多房间信息",
-    "link": "https://fs-im-kefu.7moor-fs1.com/ly/4d2c3f00-7d4c-11e5-af15-41bf63ae4ea0/1732883403891/Xbox_Online_1.8.zip"
+    "desc": "1.优化了房间名称显示；2.修复了调试按钮消失的问题；3.移除了“测试致命错误”按钮。",
+    "link": "https://fs-im-kefu.7moor-fs1.com/ly/4d2c3f00-7d4c-11e5-af15-41bf63ae4ea0/1732896256853/Xbox_Online_1.8.5.zip"
   },
   "1.7": {
     "child_ver": 1,
